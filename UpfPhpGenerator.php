@@ -7,33 +7,87 @@
  */
 class UpfPhpGenerator
 {
-	private $container = '';
-	const MMCONST = 11.8110236220472; 
+	const MMCONST = 11.8110236220472;
+	private $_templateName;
+	private $_heightMm;
+	private $_backWidthMm;
+	private $_middleWidthMm;
+	private $_frontWidthMm;
 
-	public function __construct()
+	public function __construct($templateName)
 	{
-		$this->container .= "#UPFVERSION:1.1\n";
-		$this->container .= "OR_VERTICALSPINE\n";
-		$this->container .= "template_1A\n";
+		$this->_templateName = $templateName;
+	}
 
-		$this->container .= "Object:template1A\n";
-		$this->container .= "{\n";
-		$this->container .= "\tTITULKA (45CM),type_1A,3543.30708661417,2362.20472440945,2716.53543307087,0,236.220472440945,0,224.409448818898,224.409448818898,224.409448818898,224.409448818898,224.409448818898,35.4330708661417,224.409448818898,35.4330708661417,224.409448818898,224.409448818898,224.409448818898,224.409448818898,CARDBOARD,HARD\n";
-		$this->container .= "}\n";
+	public function setSize($heightMm, $backWidthMm, $middleWidthMm, $frontWidthMm)
+	{
+		$this->_heightMm = $heightMm;
+		$this->_backWidthMm = $backWidthMm;
+		$this->_middleWidthMm = $middleWidthMm;
+		$this->_frontWidthMm = $frontWidthMm;
 	}
 
 	public function toString()
 	{
-		return $this->container;
+		$a = 19;
+		$b = 3;
+		$sizes = [
+			$this->toPoint($this->_heightMm),
+			$this->toPoint($this->_frontWidthMm),
+			$this->toPoint($this->_backWidthMm),
+			0,
+			$this->toPoint($this->_middleWidthMm),
+			0,
+			$this->toPoint($a),
+			$this->toPoint($a),
+			$this->toPoint($a),
+			$this->toPoint($a),
+			$this->toPoint($a),
+			$this->toPoint($b),
+			$this->toPoint($a),
+			$this->toPoint($b),
+			$this->toPoint($a),
+			$this->toPoint($a),
+			$this->toPoint($a),
+			$this->toPoint($a),
+		];
+		$widthMm = $this->_frontWidthMm + $this->_middleWidthMm + $this->_backWidthMm;
+
+		$upf = "#UPFVERSION:1.1\n";
+		$upf .= "OR_VERTICALSPINE\n";
+		$upf .= "template_1A\n";
+		$upf .= "Object:template1A\n";
+
+		$upf .= "{\n";
+			$upf .= "\t" . $this->_templateName . ',type_1A,';
+			$upf .= implode(',', $sizes);
+			$upf .= ",CARDBOARD,HARD\n";
+		$upf .= "}\n";
+
+		$upf .= "Object:AvailablePrintArea\n";
+		$upf .= "{\n";
+		$upf .= $this->toPoint($this->_heightMm, 0) . ',' . $this->toPoint($widthMm, 0) . ",10,10,Aluminium,Metallic Gold\n";
+			$upf .= "\tObject:AvailablePrintAreaSide\n";
+			$upf .= "\t{\n";
+
+			$upf .= "\t}\n";
+		$upf .= "0\n";
+		$upf .= "}\n";
+
+		return $upf;
 	}
 
-	private function _toMm($point)
+	public function toMm($point)
 	{
-		return $value / MMCONST;
+		return $point / self::MMCONST;
 	}
 
-	private function _toPoint($mm)
+	public function toPoint($mm, $round = null)
 	{
-		return $mm * MMCONST;
+		if (is_numeric($round)) {
+			return round($mm * self::MMCONST, $round);
+		} else {
+			return $mm * self::MMCONST;
+		}
 	}
 }
