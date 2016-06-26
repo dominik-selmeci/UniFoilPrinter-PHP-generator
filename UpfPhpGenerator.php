@@ -8,6 +8,7 @@
 class UpfPhpGenerator
 {
 	private $container = '';
+	const MMCONST = 11.8110236220472; 
 
 	public function __construct()
 	{
@@ -19,11 +20,20 @@ class UpfPhpGenerator
 		$this->container .= "{\n";
 		$this->container .= "\tTITULKA (45CM),type_1A,3543.30708661417,2362.20472440945,2716.53543307087,0,236.220472440945,0,224.409448818898,224.409448818898,224.409448818898,224.409448818898,224.409448818898,35.4330708661417,224.409448818898,35.4330708661417,224.409448818898,224.409448818898,224.409448818898,224.409448818898,CARDBOARD,HARD\n";
 		$this->container .= "}\n";
-
 	}
 
 	public function toString()
 	{
 		return $this->container;
+	}
+
+	private function _toMm($point)
+	{
+		return $value / MMCONST;
+	}
+
+	private function _toPoint($mm)
+	{
+		return $mm * MMCONST;
 	}
 }
