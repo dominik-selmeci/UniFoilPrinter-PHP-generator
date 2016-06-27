@@ -13,6 +13,9 @@ class UpfPhpGenerator
 	const ALLOWED_TYPES = ['1a', '1b', '2a'];
 	private $_type = '1a';
 
+	const ALLOWED_MATERIALS = ['cardboard', 'leather', 'plastic'];
+	private $_material = 'cardboard';
+
 	//cover parameters
 	private $_height;
 	private $_backWidth;
@@ -37,7 +40,16 @@ class UpfPhpGenerator
 		if (in_array($type, self::ALLOWED_TYPES)) {
 			$this->_type = $type;
 		} else {
-			exit($type . ' doesn\'t exist.');
+			exit($type . ' type doesn\'t exist.');
+		}
+	}
+
+	public function setMaterial($material)
+	{
+		if (in_array($material, self::ALLOWED_MATERIALS)) {
+			$this->_material = $material;
+		} else {
+			exit($material . ' material doesn\'t exist.');
 		}
 	}
 
@@ -107,7 +119,7 @@ class UpfPhpGenerator
 		$upf .= "{\n";
 			$upf .= "\t" . $this->_templateName . ',type_' . strtoupper($this->_type) . ',';
 			$upf .= implode(',', $sizes);
-			$upf .= ",CARDBOARD,HARD\n";
+			$upf .= "," . strtoupper($this->_material) . ",HARD\n";
 		$upf .= "}\n";
 
 		$upf .= "Object:AvailablePrintArea\n";
