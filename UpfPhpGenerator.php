@@ -41,12 +41,18 @@ class UpfPhpGenerator
 		}
 	}
 
-	public function setSize($heightMm, $backWidthMm, $middleWidthMm, $frontWidthMm)
+	public function setSize($heightMm, $backWidthMm, $middleWidthMm = null, $frontWidthMm = null)
 	{
 		$this->_height = $this->toPoint($heightMm);
-		$this->_backWidth = $this->toPoint($backWidthMm);
-		$this->_middleWidth = $this->toPoint($middleWidthMm);
-		$this->_frontWidth = $this->toPoint($frontWidthMm);
+
+		//template 2a / 1a,1b
+		if (empty($middleWidthMm) && empty($frontWidthMm)) { 
+			$this->_frontWidth = $this->toPoint($backWidthMm);
+		} else {
+			$this->_backWidth = $this->toPoint($backWidthMm);
+			$this->_middleWidth = $this->toPoint($middleWidthMm);
+			$this->_frontWidth = $this->toPoint($frontWidthMm);
+		}	
 	}
 
 	public function setWindow($x2Mm, $yMm, $widthMm, $heightMm)
@@ -61,28 +67,21 @@ class UpfPhpGenerator
 	{
 		$a = $this->toPoint(19);
 		$b = $this->toPoint(3);
-		$sizes = [
-			$this->_height,
-			$this->_frontWidth,
-			$this->_backWidth,
-			0,
-			$this->_middleWidth,
-			0,
-			$a,
-			$a,
-			$a,
-			$a,
-			$a,
-			$b,
-			$a,
-			$b,
-			$a,
-			$a,
-			$a,
-			$a,
-		];
-
 		$width = $this->_frontWidth + $this->_middleWidth + $this->_backWidth;
+		
+		if ($this->_type === '1a' || $this->_type === '1b') {
+			$sizes = [
+					$this->_height,
+					$this->_frontWidth,
+					$this->_backWidth,
+					0,
+					$this->_middleWidth,
+					0,
+					$a, $a, $a, $a,
+					$a, $b, $a, $b,
+					$a, $a, $a, $a,
+				];
+		}
 
 		if ($this->_type === '1b') {
 			$sizes[] = 1;
@@ -90,6 +89,14 @@ class UpfPhpGenerator
 			$sizes[] = $this->_window['y'];
 			$sizes[] = $this->_window['height'];
 			$sizes[] = $this->_window['width'];
+		}
+
+		if ($this->_type === '2a') {
+			$sizes = [
+				$this->_height,
+				$this->_frontWidth,
+				$b, $b, $b, $b
+			];
 		}
 
 		$upf = "#UPFVERSION:1.1\n";
