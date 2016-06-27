@@ -71,16 +71,16 @@ class UpfPhpGenerator
 		
 		if ($this->_type === '1a' || $this->_type === '1b') {
 			$sizes = [
-					$this->_height,
-					$this->_frontWidth,
-					$this->_backWidth,
-					0,
-					$this->_middleWidth,
-					0,
-					$a, $a, $a, $a,
-					$a, $b, $a, $b,
-					$a, $a, $a, $a,
-				];
+				$this->_height,
+				$this->_frontWidth,
+				$this->_backWidth,
+				0,
+				$this->_middleWidth,
+				0,
+				$a, $a, $a, $a,
+				$a, $b, $a, $b,
+				$a, $a, $a, $a,
+			];
 		}
 
 		if ($this->_type === '1b') {
@@ -101,11 +101,11 @@ class UpfPhpGenerator
 
 		$upf = "#UPFVERSION:1.1\n";
 		$upf .= "OR_VERTICALSPINE\n";
-		$upf .= "template_1A\n";
-		$upf .= "Object:template1A\n";
+		$upf .= "template_" . strtoupper($this->_type) . "\n";
+		$upf .= "Object:template" . strtoupper($this->_type) . "\n";
 
 		$upf .= "{\n";
-			$upf .= "\t" . $this->_templateName . ',type_1A,';
+			$upf .= "\t" . $this->_templateName . ',type_' . strtoupper($this->_type) . ',';
 			$upf .= implode(',', $sizes);
 			$upf .= ",CARDBOARD,HARD\n";
 		$upf .= "}\n";
