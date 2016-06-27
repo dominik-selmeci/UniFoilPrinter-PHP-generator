@@ -16,6 +16,9 @@ class UpfPhpGenerator
 	const ALLOWED_MATERIALS = ['cardboard', 'leather', 'plastic'];
 	private $_material = 'cardboard';
 
+	const ALLOWED_SOFTNESS = ['soft', 'hard'];
+	private $_softness = 'soft';
+
 	//cover parameters
 	private $_height;
 	private $_backWidth;
@@ -50,6 +53,15 @@ class UpfPhpGenerator
 			$this->_material = $material;
 		} else {
 			exit($material . ' material doesn\'t exist.');
+		}
+	}
+
+	public function setSoftness($softness)
+	{
+		if (in_array($softness, self::ALLOWED_SOFTNESS)) {
+			$this->_softness = $softness;
+		} else {
+			exit($softness . ' softness doesn\'t exist.');
 		}
 	}
 
@@ -119,7 +131,7 @@ class UpfPhpGenerator
 		$upf .= "{\n";
 			$upf .= "\t" . $this->_templateName . ',type_' . strtoupper($this->_type) . ',';
 			$upf .= implode(',', $sizes);
-			$upf .= "," . strtoupper($this->_material) . ",HARD\n";
+			$upf .= "," . strtoupper($this->_material) . "," . strtoupper($this->_softness) . "\n";
 		$upf .= "}\n";
 
 		$upf .= "Object:AvailablePrintArea\n";
