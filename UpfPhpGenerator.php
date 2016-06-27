@@ -7,8 +7,12 @@
  */
 class UpfPhpGenerator
 {
-	const MMCONST = 11.8110236220472;
+	const MM_CONST = 11.8110236220472;
 	private $_templateName;
+
+	const ALLOWED_TYPES = ['1a', '1b', '2a'];
+	private $_type = '1a';
+
 	private $_heightMm;
 	private $_backWidthMm;
 	private $_middleWidthMm;
@@ -17,6 +21,15 @@ class UpfPhpGenerator
 	public function __construct($templateName)
 	{
 		$this->_templateName = $templateName;
+	}
+
+	public function setType($type)
+	{
+		if (in_array($type, ALLOWED_TYPES)) {
+			$this->_type = $type;
+		} else {
+			exit($type . ' doesn\'t exist.');
+		}
 	}
 
 	public function setSize($heightMm, $backWidthMm, $middleWidthMm, $frontWidthMm)
@@ -79,15 +92,15 @@ class UpfPhpGenerator
 
 	public function toMm($point)
 	{
-		return $point / self::MMCONST;
+		return $point / self::MM_CONST;
 	}
 
 	public function toPoint($mm, $round = null)
 	{
 		if (is_numeric($round)) {
-			return round($mm * self::MMCONST, $round);
+			return round($mm * self::MM_CONST, $round);
 		} else {
-			return $mm * self::MMCONST;
+			return $mm * self::MM_CONST;
 		}
 	}
 }
