@@ -43,7 +43,7 @@ class UpfPhpGenerator
 		if (in_array($type, self::ALLOWED_TYPES)) {
 			$this->_type = $type;
 		} else {
-			exit($type . ' type doesn\'t exist.');
+			trigger_error("'" . $type . '\' type doesn\'t exist.');
 		}
 	}
 
@@ -52,7 +52,7 @@ class UpfPhpGenerator
 		if (in_array($material, self::ALLOWED_MATERIALS)) {
 			$this->_material = $material;
 		} else {
-			exit($material . ' material doesn\'t exist.');
+			trigger_error("'" . $material . '\' material doesn\'t exist.');
 		}
 	}
 
@@ -61,7 +61,7 @@ class UpfPhpGenerator
 		if (in_array($softness, self::ALLOWED_SOFTNESS)) {
 			$this->_softness = $softness;
 		} else {
-			exit($softness . ' softness doesn\'t exist.');
+			trigger_error("'" . $softness . '\' softness doesn\'t exist.');
 		}
 	}
 
