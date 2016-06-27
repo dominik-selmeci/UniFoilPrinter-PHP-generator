@@ -13,10 +13,19 @@ class UpfPhpGenerator
 	const ALLOWED_TYPES = ['1a', '1b', '2a'];
 	private $_type = '1a';
 
-	private $_heightMm;
-	private $_backWidthMm;
-	private $_middleWidthMm;
-	private $_frontWidthMm;
+	//cover parameters
+	private $_height;
+	private $_backWidth;
+	private $_middleWidth;
+	private $_frontWidth;
+
+	//window parameters for 1b template
+	private $_window = [
+		'x2' => null,
+		'y' => null,
+		'width' => null,
+		'height' => null,
+	];
 
 	public function __construct($templateName)
 	{
@@ -25,7 +34,7 @@ class UpfPhpGenerator
 
 	public function setType($type)
 	{
-		if (in_array($type, ALLOWED_TYPES)) {
+		if (in_array($type, self::ALLOWED_TYPES)) {
 			$this->_type = $type;
 		} else {
 			exit($type . ' doesn\'t exist.');
@@ -34,37 +43,54 @@ class UpfPhpGenerator
 
 	public function setSize($heightMm, $backWidthMm, $middleWidthMm, $frontWidthMm)
 	{
-		$this->_heightMm = $heightMm;
-		$this->_backWidthMm = $backWidthMm;
-		$this->_middleWidthMm = $middleWidthMm;
-		$this->_frontWidthMm = $frontWidthMm;
+		$this->_height = $this->toPoint($heightMm);
+		$this->_backWidth = $this->toPoint($backWidthMm);
+		$this->_middleWidth = $this->toPoint($middleWidthMm);
+		$this->_frontWidth = $this->toPoint($frontWidthMm);
+	}
+
+	public function setWindow($x2Mm, $yMm, $widthMm, $heightMm)
+	{
+		$this->_window['x2'] = $this->toPoint($x2Mm);
+		$this->_window['y'] = $this->toPoint($yMm);
+		$this->_window['width'] = $this->toPoint($widthMm);
+		$this->_window['height'] = $this->toPoint($heightMm);
 	}
 
 	public function toString()
 	{
-		$a = 19;
-		$b = 3;
+		$a = $this->toPoint(19);
+		$b = $this->toPoint(3);
 		$sizes = [
-			$this->toPoint($this->_heightMm),
-			$this->toPoint($this->_frontWidthMm),
-			$this->toPoint($this->_backWidthMm),
+			$this->_height,
+			$this->_frontWidth,
+			$this->_backWidth,
 			0,
-			$this->toPoint($this->_middleWidthMm),
+			$this->_middleWidth,
 			0,
-			$this->toPoint($a),
-			$this->toPoint($a),
-			$this->toPoint($a),
-			$this->toPoint($a),
-			$this->toPoint($a),
-			$this->toPoint($b),
-			$this->toPoint($a),
-			$this->toPoint($b),
-			$this->toPoint($a),
-			$this->toPoint($a),
-			$this->toPoint($a),
-			$this->toPoint($a),
+			$a,
+			$a,
+			$a,
+			$a,
+			$a,
+			$b,
+			$a,
+			$b,
+			$a,
+			$a,
+			$a,
+			$a,
 		];
-		$widthMm = $this->_frontWidthMm + $this->_middleWidthMm + $this->_backWidthMm;
+
+		$width = $this->_frontWidth + $this->_middleWidth + $this->_backWidth;
+
+		if ($this->_type === '1b') {
+			$sizes[] = 1;
+			$sizes[] = $width - $this->_window['x2'] - $this->_window['width']; //x
+			$sizes[] = $this->_window['y'];
+			$sizes[] = $this->_window['height'];
+			$sizes[] = $this->_window['width'];
+		}
 
 		$upf = "#UPFVERSION:1.1\n";
 		$upf .= "OR_VERTICALSPINE\n";
@@ -79,7 +105,7 @@ class UpfPhpGenerator
 
 		$upf .= "Object:AvailablePrintArea\n";
 		$upf .= "{\n";
-		$upf .= $this->toPoint($this->_heightMm, 0) . ',' . $this->toPoint($widthMm, 0) . ",10,10,Aluminium,Metallic Gold\n";
+		$upf .= round($this->_height) . ',' . round($width) . ",10,10,Aluminium,Metallic Gold\n";
 			$upf .= "\tObject:AvailablePrintAreaSide\n";
 			$upf .= "\t{\n";
 
