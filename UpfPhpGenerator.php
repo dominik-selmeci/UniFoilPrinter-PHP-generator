@@ -69,7 +69,7 @@ class UpfPhpGenerator
 	{
 		$this->_height = $this->toPoint($heightMm);
 
-		//template 2a / 1a,1b
+		//template 2a || 1a,1b
 		if (empty($middleWidthMm) && empty($frontWidthMm)) { 
 			$this->_frontWidth = $this->toPoint($backWidthMm);
 		} else {
@@ -123,28 +123,34 @@ class UpfPhpGenerator
 			];
 		}
 
-		$upf = "#UPFVERSION:1.1\n";
-		$upf .= "OR_VERTICALSPINE\n";
-		$upf .= "template_" . strtoupper($this->_type) . "\n";
-		$upf .= "Object:template" . strtoupper($this->_type) . "\n";
+		$upf = "#UPFVERSION:1.1" . PHP_EOL;
+		$upf .= "OR_VERTICALSPINE" . PHP_EOL;
+		$upf .= "template_" . strtoupper($this->_type) . PHP_EOL;
+		$upf .= "Object:template" . strtoupper($this->_type) . PHP_EOL;
 
-		$upf .= "{\n";
+		$upf .= "{" . PHP_EOL;
 			$upf .= "\t" . $this->_templateName . ',type_' . strtoupper($this->_type) . ',';
 			$upf .= implode(',', $sizes);
-			$upf .= "," . strtoupper($this->_material) . "," . strtoupper($this->_softness) . "\n";
-		$upf .= "}\n";
+			$upf .= "," . strtoupper($this->_material) . "," . strtoupper($this->_softness) . PHP_EOL;
+		$upf .= "}" . PHP_EOL;
 
-		$upf .= "Object:AvailablePrintArea\n";
-		$upf .= "{\n";
-		$upf .= round($this->_height) . ',' . round($width) . ",10,10,Aluminium,Metallic Gold\n";
-			$upf .= "\tObject:AvailablePrintAreaSide\n";
-			$upf .= "\t{\n";
+		$upf .= "Object:AvailablePrintArea" . PHP_EOL;
+		$upf .= "{" . PHP_EOL;
+		$upf .= round($this->_height) . ',' . round($width) . ",10,10,Aluminium,Metallic Gold" . PHP_EOL;
+			$upf .= "\tObject:AvailablePrintAreaSide" . PHP_EOL;
+			$upf .= "\t{" . PHP_EOL;
 
-			$upf .= "\t}\n";
-		$upf .= "0\n";
-		$upf .= "}\n";
+			$upf .= "\t}" . PHP_EOL;
+		$upf .= "0" . PHP_EOL;
+		$upf .= "}" . PHP_EOL;
 
 		return $upf;
+	}
+
+	public function saveTo($file)
+	{
+		$upf = $this->toString();
+		file_put_contents($file, $upf);
 	}
 
 	public function toMm($point)
