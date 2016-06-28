@@ -1,11 +1,14 @@
 <?php
 
+require_once 'classes/Upf.php';
+require_once 'classes/AvailablePrintArea.php';
+
 /**
  * UniFoilPrinter PHP generator
  *
  * Author: Bc. Dominik Šelmeci
  */
-class UpfPhpGenerator
+class UpfPhpGenerator extends Upf
 {
 	const MM_CONST = 11.8110236220472;
 	private $_templateName;
@@ -22,8 +25,13 @@ class UpfPhpGenerator
 	//cover parameters
 	private $_height;
 	private $_backWidth;
-	private $_middleWidth;
+	private $_spineWidth;
 	private $_frontWidth;
+
+	// available print areas
+	public $front;
+	public $spine;
+	public $back;
 
 	//window parameters for 1b template
 	private $_window = [
@@ -36,6 +44,10 @@ class UpfPhpGenerator
 	public function __construct($templateName)
 	{
 		$this->_templateName = $templateName;
+
+		$this->front = new AvailablePrintArea('front');
+		$this->spine = new AvailablePrintArea('spine');
+		$this->back = new AvailablePrintArea('back');
 	}
 
 	public function setType($type)
@@ -65,16 +77,16 @@ class UpfPhpGenerator
 		}
 	}
 
-	public function setSize($heightMm, $backWidthMm, $middleWidthMm = null, $frontWidthMm = null)
+	public function setSize($heightMm, $backWidthMm, $spineWidthMm = null, $frontWidthMm = null)
 	{
 		$this->_height = $this->toPoint($heightMm);
 
 		//template 2a || 1a,1b
-		if (empty($middleWidthMm) && empty($frontWidthMm)) { 
+		if (empty($spineWidthMm) && empty($frontWidthMm)) { 
 			$this->_frontWidth = $this->toPoint($backWidthMm);
 		} else {
 			$this->_backWidth = $this->toPoint($backWidthMm);
-			$this->_middleWidth = $this->toPoint($middleWidthMm);
+			$this->_spineWidth = $this->toPoint($spineWidthMm);
 			$this->_frontWidth = $this->toPoint($frontWidthMm);
 		}	
 	}
@@ -90,8 +102,8 @@ class UpfPhpGenerator
 	public function toString()
 	{
 		$a = $this->toPoint(19);
-		$b = $this->toPoint(3);
-		$width = $this->_frontWidth + $this->_middleWidth + $this->_backWidth;
+		$b = $this->toPoint(8);
+		$width = $this->_frontWidth + $this->_spineWidth + $this->_backWidth;
 		
 		if ($this->_type === '1a' || $this->_type === '1b') {
 			$sizes = [
@@ -99,7 +111,7 @@ class UpfPhpGenerator
 				$this->_frontWidth,
 				$this->_backWidth,
 				0,
-				$this->_middleWidth,
+				$this->_spineWidth,
 				0,
 				$a, $a, $a, $a,
 				$a, $b, $a, $b,
@@ -116,6 +128,7 @@ class UpfPhpGenerator
 		}
 
 		if ($this->_type === '2a') {
+			pa($this->front->getParameters());
 			$sizes = [
 				$this->_height,
 				$this->_frontWidth,
@@ -134,36 +147,41 @@ class UpfPhpGenerator
 			$upf .= "," . strtoupper($this->_material) . "," . strtoupper($this->_softness) . PHP_EOL;
 		$upf .= "}" . PHP_EOL;
 
-		$upf .= "Object:AvailablePrintArea" . PHP_EOL;
-		$upf .= "{" . PHP_EOL;
-		$upf .= round($this->_height) . ',' . round($width) . ",10,10,Aluminium,Metallic Gold" . PHP_EOL;
-			$upf .= "\tObject:AvailablePrintAreaSide" . PHP_EOL;
-			$upf .= "\t{" . PHP_EOL;
+		if ($this->_type === '1a' || $this->_type === '1b') {
+			$upf .= $this->front->toString();
+			$upf .= $this->spine->toString();
+			$upf .= $this->back->toString();
+		} 
 
-			$upf .= "\t}" . PHP_EOL;
-		$upf .= "0" . PHP_EOL;
-		$upf .= "}" . PHP_EOL;
+		if ($this->_type === '2a') {
+			$upf .= $this->front->toString();
+		}	
 
 		return $upf;
+	}
+
+	private function _toStringFront()
+	{
+		$front = "Object:AvailablePrintArea" . PHP_EOL;
+		$front .= "{" . PHP_EOL;
+		$front .= round($this->_height) . ',' . round($this->_frontWidth) . ",10,10,Aluminium,Metallic Gold" . PHP_EOL;
+			$front .= "\tObject:AvailablePrintAreaSide" . PHP_EOL;
+			$front .= "\t{" . PHP_EOL;
+			// height,width, Front, x,y
+			$front .= "\t\t" . $this->toPoint(150, 0) . ',' . $this->toPoint(80, 0) . ',Front,' . $this->toPoint(10, 0) . ',' . $this->toPoint(10, 0) . PHP_EOL;
+			$front .= "\t\t" . '0' . PHP_EOL;
+
+
+			$front .= "\t}" . PHP_EOL;
+		$front .= "0" . PHP_EOL;
+		$front .= "}" . PHP_EOL;
+
+		return $front;
 	}
 
 	public function saveTo($file)
 	{
 		$upf = $this->toString();
 		file_put_contents($file, $upf);
-	}
-
-	public function toMm($point)
-	{
-		return $point / self::MM_CONST;
-	}
-
-	public function toPoint($mm, $round = null)
-	{
-		if (is_numeric($round)) {
-			return round($mm * self::MM_CONST, $round);
-		} else {
-			return $mm * self::MM_CONST;
-		}
 	}
 }
