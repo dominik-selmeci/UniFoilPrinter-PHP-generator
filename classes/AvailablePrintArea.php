@@ -10,6 +10,9 @@ class AvailablePrintArea extends Upf
 	private $_x;
 	private $_y;
 
+	private $_material = 'Aluminium';
+	const ALLOWED_MATERIALS = ['Aluminium', 'Graphite', 'Quartz', 'Azur', 'Ruby', 'Gold', 'Bordeaux', 'DarkGreen', 'DarkBlue', 'Black', 'PUCoatedMaterial', 'Leather', 'Matt', 'Clear'];
+
 	public function __construct($type)
 	{
 		if (in_array($type, self::ALLOWED_TYPES)) {
@@ -31,6 +34,15 @@ class AvailablePrintArea extends Upf
 		$this->_y = $this->toPoint($yMm);
 	}
 
+	public function setMaterial($material)
+	{
+		if (in_array($material, self::ALLOWED_MATERIALS)) {
+			$this->_material = $material;
+		} else {
+			trigger_error("'" . $material . '\' material doesn\'t exist.');
+		}
+	}
+
 	public function getParameters()
 	{
 		return [
@@ -45,7 +57,7 @@ class AvailablePrintArea extends Upf
 	{
 		$front = "Object:AvailablePrintArea" . PHP_EOL;
 		$front .= "{" . PHP_EOL;
-		$front .= round($this->_height) . ',' . round($this->_width) . ",10,10,Aluminium,Metallic Gold" . PHP_EOL;
+		$front .= round($this->_height) . ',' . round($this->_width) . ",10,10," . $this->_material . ",Metallic Gold" . PHP_EOL;
 			$front .= "\tObject:AvailablePrintAreaSide" . PHP_EOL;
 			$front .= "\t{" . PHP_EOL;
 
