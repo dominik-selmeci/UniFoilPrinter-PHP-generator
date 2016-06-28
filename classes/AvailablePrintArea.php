@@ -12,26 +12,36 @@ class AvailablePrintArea extends Upf
 
 	public function __construct($type)
 	{
-		if (in_array($type, ALLOWED_TYPES)) {
+		if (in_array($type, self::ALLOWED_TYPES)) {
 			$this->_type = $type;
 		} else {
 			trigger_error("'{$type}' is not allowed type for AvailablePrintArea.");
 		}
 	}
 
-	protected function setSize($heightMm, $widthMm)
+	public function setSize($heightMm, $widthMm)
 	{
 		$this->_height = $this->toPoint($heightMm);
 		$this->_width = $this->toPoint($widthMm);
 	}
 
-	protected function setPosition($xMm, $yMm)
+	public function setPosition($xMm, $yMm)
 	{
 		$this->_x = $this->toPoint($xMm);
 		$this->_y = $this->toPoint($yMm);
 	}
 
-	protected function toString()
+	public function getParameters()
+	{
+		return [
+			'x' => $this->_x,
+			'y' => $this->_y,
+			'width' => $this->_width,
+			'height' => $this->_height,
+		];
+	}
+
+	public function toString()
 	{
 		$front = "Object:AvailablePrintArea" . PHP_EOL;
 		$front .= "{" . PHP_EOL;
@@ -40,7 +50,8 @@ class AvailablePrintArea extends Upf
 			$front .= "\t{" . PHP_EOL;
 
 			// height,width, Front, x,y
-			$front .= "\t\t" . round($this->_height) . ',' . round($this->_width) . ',Front,' . round($this->_x) . ',' . round($this->_y) . PHP_EOL;
+			$front .= "\t\t" . round($this->_height) . ',' . round($this->_width) . ',' . ucfirst($this->_type) . ',';
+			$front .= round($this->_x) . ',' . round($this->_y) . PHP_EOL;
 
 			$front .= "\t\t" . '0' . PHP_EOL;
 			$front .= "\t}" . PHP_EOL;
