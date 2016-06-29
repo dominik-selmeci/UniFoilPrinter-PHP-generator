@@ -197,25 +197,6 @@ class UpfPhpGenerator extends Upf
 		return $upf;
 	}
 
-	private function _toStringFront()
-	{
-		$front = "Object:AvailablePrintArea" . PHP_EOL;
-		$front .= "{" . PHP_EOL;
-		$front .= round($this->_height) . ',' . round($this->_frontWidth) . ",10,10,Aluminium,Metallic Gold" . PHP_EOL;
-			$front .= "\tObject:AvailablePrintAreaSide" . PHP_EOL;
-			$front .= "\t{" . PHP_EOL;
-			// height,width, Front, x,y
-			$front .= "\t\t" . $this->toPoint(150, 0) . ',' . $this->toPoint(80, 0) . ',Front,' . $this->toPoint(10, 0) . ',' . $this->toPoint(10, 0) . PHP_EOL;
-			$front .= "\t\t" . '0' . PHP_EOL;
-
-
-			$front .= "\t}" . PHP_EOL;
-		$front .= "0" . PHP_EOL;
-		$front .= "}" . PHP_EOL;
-
-		return $front;
-	}
-
 	public function saveTo($file)
 	{
 		$upf = $this->toString();
