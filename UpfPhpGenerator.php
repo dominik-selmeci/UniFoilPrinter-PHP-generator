@@ -1,7 +1,7 @@
 <?php
 
 require_once 'classes/Upf.php';
-require_once 'classes/AvailablePrintArea.php';
+require_once 'classes/AvailablePrintAreaSide.php';
 
 /**
  * UniFoilPrinter PHP generator
@@ -27,6 +27,7 @@ class UpfPhpGenerator extends Upf
 	private $_backWidth;
 	private $_spineWidth;
 	private $_frontWidth;
+	private $_margin = 19;
 
 	// available print areas
 	public $front;
@@ -45,9 +46,9 @@ class UpfPhpGenerator extends Upf
 	{
 		$this->_templateName = $templateName;
 
-		$this->front = new AvailablePrintArea('front');
-		$this->spine = new AvailablePrintArea('spine');
-		$this->back = new AvailablePrintArea('back');
+		$this->front = new AvailablePrintAreaSide('front');
+		$this->spine = new AvailablePrintAreaSide('spine');
+		$this->back = new AvailablePrintAreaSide('back');
 	}
 
 	public function setType($type)
@@ -77,6 +78,15 @@ class UpfPhpGenerator extends Upf
 		}
 	}
 
+	public function setMargin($marginMm)
+	{
+		$this->_margin = $this->toPoint($marginMm);
+
+		$this->front->setPosition($this->_margin + $this->_backWidth + $this->_spineWidth, $this->_margin);
+		$this->spine->setPosition($this->_backWidth, $this->_margin);
+		$this->back->setPosition($this->_margin, $this->_margin);
+	}
+
 	public function setSize($heightMm, $backWidthMm, $spineWidthMm = null, $frontWidthMm = null)
 	{
 		$this->_height = $this->toPoint($heightMm);
@@ -84,10 +94,16 @@ class UpfPhpGenerator extends Upf
 		//template 2a || 1a,1b
 		if (empty($spineWidthMm) && empty($frontWidthMm)) { 
 			$this->_frontWidth = $this->toPoint($backWidthMm);
+
+			$this->front->setSize($this->_height, $this->_frontWidth);
 		} else {
 			$this->_backWidth = $this->toPoint($backWidthMm);
 			$this->_spineWidth = $this->toPoint($spineWidthMm);
 			$this->_frontWidth = $this->toPoint($frontWidthMm);
+
+			$this->back->setSize($this->_height, $this->_backWidth);
+			$this->spine->setSize($this->_height, $this->_spineWidth);
+			$this->front->setSize($this->_height, $this->_frontWidth);
 		}	
 	}
 
@@ -101,8 +117,8 @@ class UpfPhpGenerator extends Upf
 
 	public function toString()
 	{
-		$a = $this->toPoint(19);
-		$b = $this->toPoint(8);
+		$a = $this->_margin;
+		$b = $this->toPoint(3);
 		$width = $this->_frontWidth + $this->_spineWidth + $this->_backWidth;
 		
 		if ($this->_type === '1a' || $this->_type === '1b') {
@@ -139,23 +155,30 @@ class UpfPhpGenerator extends Upf
 		$upf = "#UPFVERSION:1.1" . PHP_EOL;
 		$upf .= "OR_VERTICALSPINE" . PHP_EOL;
 		$upf .= "template_" . strtoupper($this->_type) . PHP_EOL;
+		
 		$upf .= "Object:template" . strtoupper($this->_type) . PHP_EOL;
-
 		$upf .= "{" . PHP_EOL;
 			$upf .= "\t" . $this->_templateName . ',type_' . strtoupper($this->_type) . ',';
 			$upf .= implode(',', $sizes);
 			$upf .= "," . strtoupper($this->_material) . "," . strtoupper($this->_softness) . PHP_EOL;
 		$upf .= "}" . PHP_EOL;
 
+		$upf .= "Object:AvailablePrintArea" . PHP_EOL;
+		$upf .= "{" . PHP_EOL;
+		$upf .= round($this->_height) . ',' . round($width) . ",10,10,Aluminium,Metallic Gold" . PHP_EOL;
+
 		if ($this->_type === '1a' || $this->_type === '1b') {
-			$upf .= $this->front->toString();
-			$upf .= $this->spine->toString();
-			$upf .= $this->back->toString();
+			$upf .= $this->front->toString($this->_margin);
+			$upf .= $this->spine->toString($this->_margin);
+			$upf .= $this->back->toString($this->_margin);
 		} 
 
 		if ($this->_type === '2a') {
 			$upf .= $this->front->toString();
 		}	
+
+		$upf .= "0" . PHP_EOL;
+		$upf .= "}" . PHP_EOL;
 
 		return $upf;
 	}
