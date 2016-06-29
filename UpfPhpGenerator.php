@@ -144,7 +144,6 @@ class UpfPhpGenerator extends Upf
 		}
 
 		if ($this->_type === '2a') {
-			pa($this->front->getParameters());
 			$sizes = [
 				$this->_height,
 				$this->_frontWidth,
