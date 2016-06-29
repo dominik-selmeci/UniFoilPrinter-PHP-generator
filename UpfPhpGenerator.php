@@ -19,6 +19,9 @@ class UpfPhpGenerator extends Upf
 	const ALLOWED_MATERIALS = ['cardboard', 'leather', 'plastic'];
 	private $_material = 'cardboard';
 
+	const ALLOWED_PRINT_AREA_MATERIALS = ['Aluminium', 'Graphite', 'Quartz', 'Azur', 'Ruby', 'Gold', 'Bordeaux', 'DarkGreen', 'DarkBlue', 'Black', 'PUCoatedMaterial', 'Leather', 'Matt', 'Clear'];
+	private $_printAreaMaterial = 'Aluminium';
+
 	const ALLOWED_SOFTNESS = ['soft', 'hard'];
 	private $_softness = 'soft';
 
@@ -66,6 +69,15 @@ class UpfPhpGenerator extends Upf
 	{
 		if (in_array($material, self::ALLOWED_MATERIALS)) {
 			$this->_material = $material;
+		} else {
+			trigger_error("'" . $material . '\' material doesn\'t exist.');
+		}
+	}
+
+	public function setPrintAreaMaterial($material)
+	{
+		if (in_array($material, self::ALLOWED_PRINT_AREA_MATERIALS)) {
+			$this->_printAreaMaterial = $material;
 		} else {
 			trigger_error("'" . $material . '\' material doesn\'t exist.');
 		}
@@ -166,7 +178,7 @@ class UpfPhpGenerator extends Upf
 
 		$upf .= "Object:AvailablePrintArea" . PHP_EOL;
 		$upf .= "{" . PHP_EOL;
-		$upf .= round($this->_height) . ',' . round($width) . ",10,10,Aluminium,Metallic Gold" . PHP_EOL;
+		$upf .= round($this->_height) . ',' . round($width) . ",10,10," . $this->_printAreaMaterial . ",Metallic Gold" . PHP_EOL;
 
 		if ($this->_type === '1a' || $this->_type === '1b') {
 			$upf .= $this->front->toString($this->_margin);

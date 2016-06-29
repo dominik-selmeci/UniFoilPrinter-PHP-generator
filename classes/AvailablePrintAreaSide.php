@@ -10,9 +10,6 @@ class AvailablePrintAreaSide extends Upf
 	private $_x;
 	private $_y;
 
-	private $_material = 'Aluminium';
-	const ALLOWED_MATERIALS = ['Aluminium', 'Graphite', 'Quartz', 'Azur', 'Ruby', 'Gold', 'Bordeaux', 'DarkGreen', 'DarkBlue', 'Black', 'PUCoatedMaterial', 'Leather', 'Matt', 'Clear'];
-
 	public function __construct($type)
 	{
 		if (in_array($type, self::ALLOWED_TYPES)) {
@@ -32,15 +29,6 @@ class AvailablePrintAreaSide extends Upf
 	{
 		$this->_x = $x;
 		$this->_y = $y;
-	}
-
-	public function setMaterial($material)
-	{
-		if (in_array($material, self::ALLOWED_MATERIALS)) {
-			$this->_material = $material;
-		} else {
-			trigger_error("'" . $material . '\' material doesn\'t exist.');
-		}
 	}
 
 	public function toString($margin)
