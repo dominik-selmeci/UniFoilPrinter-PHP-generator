@@ -25,8 +25,8 @@ $upf->front->setLayer('Metallic Gold');
 $printAreaY = 100 - $margin;
 
 // add PrintArea ($xMm, $yMm, $widthMm, $heightMm)
-$upf->front->addPrintArea(0,81, ($frontWidthMm-2*$margin),40);
-$upf->back->addPrintArea(0,81, ($backWidthMm-2*$margin),55);
+$upf->front->addPrintArea(0,$printAreaY, ($frontWidthMm-2*$margin),40);
+$upf->back->addPrintArea(0,$printAreaY, ($backWidthMm-2*$margin),55);
 
 //$upf->front->getPrintArea($printAreaIndex)[$elementIndex]->doSomething();
 
