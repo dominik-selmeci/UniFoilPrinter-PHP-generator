@@ -1,6 +1,7 @@
 <?php
 
 require_once 'classes/Upf.php';
+require_once 'classes/Layer.php';
 require_once 'classes/AvailablePrintAreaSide.php';
 
 /**
