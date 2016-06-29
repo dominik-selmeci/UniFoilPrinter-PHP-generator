@@ -25,6 +25,12 @@ class Layer extends Upf
 		$this->_printAreas[] = new PrintArea($xMm, $yMm, $widthMm, $heightMm);
 	}
 
+	public function getPrintArea($index)
+	{
+		//print_r($this->_printAreas[$index]);
+		return $this->_printAreas[$index];
+	}
+
 	public function toString()
 	{
 		$printAreasCount = count($this->_printAreas);

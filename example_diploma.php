@@ -28,7 +28,14 @@ $printAreaY = 100 - $margin;
 $upf->front->addPrintArea(0,$printAreaY, ($frontWidthMm-2*$margin),40);
 $upf->back->addPrintArea(0,$printAreaY, ($backWidthMm-2*$margin),55);
 
-//$upf->front->getPrintArea($printAreaIndex)[$elementIndex]->doSomething();
+// addText
+$upf->front->getPrintArea(0)
+	->addText('Test text with utf chars ĽĺŽŠyj', 0,0, ($frontWidthMm-2*$margin),20)
+	->setBold(true)
+	->setItalic(true)
+	->setUnderline(true)
+	->setFont('Verdana')
+	->setFontSize(24);
 
 echo '<pre>' . $upf->toString() . '</pre>';
 
