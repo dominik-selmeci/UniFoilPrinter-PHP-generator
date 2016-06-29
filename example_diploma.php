@@ -18,4 +18,8 @@ $upf->setSize($heightMm, $backWidthMm, $spineWidthMm, $frontWidthMm);
 $upf->setMargin(19); 
 
 echo '<pre>' . $upf->toString() . '</pre>';
+
+if (!is_dir(realpath('./') . DIRECTORY_SEPARATOR . 'samples')) {
+	mkdir(realpath('./') . DIRECTORY_SEPARATOR . 'samples');
+}
 $upf->saveTo(realpath('./') . DIRECTORY_SEPARATOR . 'samples' . DIRECTORY_SEPARATOR . 'test.upf');
