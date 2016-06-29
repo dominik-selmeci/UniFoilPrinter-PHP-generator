@@ -7,6 +7,8 @@ class Layer extends Upf
 	// array = [red, green, blue, alpha];  item(0..255)
 	private $_rgba;
 
+	private $_printAreas = [];
+
 	public function __construct($name, $rgba)
 	{
 		$this->_name = $name;
@@ -18,18 +20,25 @@ class Layer extends Upf
 		}
 	}
 
+	public function addPrintArea($xMm, $yMm, $widthMm, $heightMm)
+	{
+		$this->_printAreas[] = new PrintArea($xMm, $yMm, $widthMm, $heightMm);
+	}
+
 	public function toString()
 	{
-		$printAreasCount = 0;
+		$printAreasCount = count($this->_printAreas);
 
 		$layer = "\t\t\tObject:Layer" . PHP_EOL;
 		$layer .= "\t\t\t{" . PHP_EOL;
 
 		$layer .= "\t\t\t\t" . $this->_name . ',' . str_replace(' ', '', $this->_name) . ',';
-		$layer .= $this->_rgba[0] . ',' . $this->_rgba[1] . ',' . $this->_rgba[2] . ',' . $this->_rgba[3] . PHP_EOL;
+		$layer .= $this->_rgba[3] . ',' . $this->_rgba[0] . ',' . $this->_rgba[1] . ',' . $this->_rgba[2] . PHP_EOL;
 		$layer .= "\t\t\t\t" . $printAreasCount . PHP_EOL;
 
-		//TODO get printareas->toString()
+		foreach ($this->_printAreas as $printArea) {
+			$layer .= $printArea->toString();
+		}
 
 		$layer .= "\t\t\t}" . PHP_EOL;
 

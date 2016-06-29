@@ -37,6 +37,11 @@ class AvailablePrintAreaSide extends Upf
 		$this->_currentLayer = $this->_layers[$name];
 	}
 
+	public function addPrintArea($xMm, $yMm, $widthMm, $heightMm)
+	{
+		$this->_currentLayer->addPrintArea($xMm, $yMm, $widthMm, $heightMm);
+	}
+
 	public function setSize($height, $width)
 	{
 		$this->_height = $height;
