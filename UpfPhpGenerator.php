@@ -49,6 +49,8 @@ class UpfPhpGenerator extends Upf
 		$this->front = new AvailablePrintAreaSide('front');
 		$this->spine = new AvailablePrintAreaSide('spine');
 		$this->back = new AvailablePrintAreaSide('back');
+
+		$this->setMargin($this->_margin);
 	}
 
 	public function setType($type)
@@ -173,7 +175,7 @@ class UpfPhpGenerator extends Upf
 		} 
 
 		if ($this->_type === '2a') {
-			$upf .= $this->front->toString();
+			$upf .= $this->front->toString($this->_margin);
 		}	
 
 		$upf .= "0" . PHP_EOL;
