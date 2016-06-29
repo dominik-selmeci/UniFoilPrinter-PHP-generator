@@ -178,6 +178,7 @@ class UpfPhpGenerator extends Upf
 			$upf .= $this->front->toString($this->_margin);
 		}	
 
+		// zero guidelines
 		$upf .= "0" . PHP_EOL;
 		$upf .= "}" . PHP_EOL;
 

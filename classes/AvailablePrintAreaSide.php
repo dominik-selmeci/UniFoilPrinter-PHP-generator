@@ -55,7 +55,8 @@ class AvailablePrintAreaSide extends Upf
 		$front .= "\t\t" . round($this->_height - 2*$margin) . ',' . round($width) . ',' . ucfirst($this->_type) . ',';
 		$front .= round($x) . ',' . round($this->_y) . PHP_EOL;
 
-		$front .= "\t\t" . '0' . PHP_EOL;
+		//number of layers
+		$front .= "\t\t" . '0' . PHP_EOL; 
 		$front .= "\t}" . PHP_EOL;
 
 		return $front;
