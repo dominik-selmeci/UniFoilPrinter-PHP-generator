@@ -26,7 +26,7 @@ $printAreaY = 100 - $margin;
 
 // add PrintArea ($xMm, $yMm, $widthMm, $heightMm)
 $upf->front->addPrintArea(0,$printAreaY, ($frontWidthMm-2*$margin),40);
-$upf->back->addPrintArea(0,$printAreaY, ($backWidthMm-2*$margin),55);
+$upf->back->addPrintArea(0,20, ($backWidthMm-2*$margin),55);
 
 // addText
 $upf->front->getPrintArea(0)
@@ -36,6 +36,31 @@ $upf->front->getPrintArea(0)
 	->setUnderline(true)
 	->setFont('Verdana')
 	->setFontSize(24);
+
+
+// add Text, where text base = 130mm
+$fontSize = 30;
+$ptToMm = 0.352778;
+$fontSizeMm = $fontSize * $ptToMm;
+
+// PrintArea y position = 110 from top of cover 
+$upf->back->addPrintArea(0,110 - $margin, ($backWidthMm-2*$margin),55);
+
+$textY = 20; // move top of the text to 130mm
+$textY -= $fontSizeMm * 0.85; //move top of the text to -85% of the text height
+$upf->back->getPrintArea(1)
+	->addText('ĺText base y = 130mmĺ', 0, $textY, ($frontWidthMm-2*$margin), $fontSize*0.5)
+	->setFontSize($fontSize)
+	->setFont('Verdana');
+
+// add Text, where text base = 150mm
+$fontSize = 10;
+$fontSizeMm = $fontSize * $ptToMm;
+$upf->back->getPrintArea(1)
+	->addText('ĺText base y = 150mmĺ', 0, 40 - $fontSizeMm * 0.85, ($frontWidthMm-2*$margin), $fontSize*0.5)
+	->setFontSize($fontSize)
+	->setFont('Verdana');
+
 
 echo '<pre>' . $upf->toString() . '</pre>';
 
