@@ -3,7 +3,7 @@
 class AvailablePrintAreaSide extends Upf
 {
 	private $_type;
-	const ALLOWED_TYPES = ['front', 'spine', 'back'];
+	private $_allowedTypes = ['front', 'spine', 'back'];
 
 	private $_width;
 	private $_height;
@@ -15,7 +15,7 @@ class AvailablePrintAreaSide extends Upf
 
 	public function __construct($type)
 	{
-		if (in_array($type, self::ALLOWED_TYPES)) {
+		if (in_array($type, $this->_allowedTypes)) {
 			$this->_type = $type;
 
 			$this->_addLayer('Metallic Gold', [255,215,0,255]);

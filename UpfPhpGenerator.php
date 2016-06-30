@@ -16,16 +16,16 @@ class UpfPhpGenerator extends Upf
 	const MM_CONST = 11.8110236220472;
 	private $_templateName;
 
-	const ALLOWED_TYPES = ['1a', '1b', '2a'];
+	private $_alowedTypes = ['1a', '1b', '2a'];
 	private $_type = '1a';
 
-	const ALLOWED_MATERIALS = ['cardboard', 'leather', 'plastic'];
+	private $_allowedMaterials = ['cardboard', 'leather', 'plastic'];
 	private $_material = 'cardboard';
 
-	const ALLOWED_PRINT_AREA_MATERIALS = ['Aluminium', 'Graphite', 'Quartz', 'Azur', 'Ruby', 'Gold', 'Bordeaux', 'DarkGreen', 'DarkBlue', 'Black', 'PUCoatedMaterial', 'Leather', 'Matt', 'Clear'];
+	private $_allowedPrintAreaMaterials = ['Aluminium', 'Graphite', 'Quartz', 'Azur', 'Ruby', 'Gold', 'Bordeaux', 'DarkGreen', 'DarkBlue', 'Black', 'PUCoatedMaterial', 'Leather', 'Matt', 'Clear'];
 	private $_printAreaMaterial = 'Aluminium';
 
-	const ALLOWED_SOFTNESS = ['soft', 'hard'];
+	private $_allowedSoftness = ['soft', 'hard'];
 	private $_softness = 'soft';
 
 	//cover parameters
@@ -61,7 +61,7 @@ class UpfPhpGenerator extends Upf
 
 	public function setType($type)
 	{
-		if (in_array($type, self::ALLOWED_TYPES)) {
+		if (in_array($type, $this->_alowedTypes)) {
 			$this->_type = $type;
 		} else {
 			trigger_error("'" . $type . '\' type doesn\'t exist.');
@@ -70,7 +70,7 @@ class UpfPhpGenerator extends Upf
 
 	public function setMaterial($material)
 	{
-		if (in_array($material, self::ALLOWED_MATERIALS)) {
+		if (in_array($material, $this->_allowedMaterials)) {
 			$this->_material = $material;
 		} else {
 			trigger_error("'" . $material . '\' material doesn\'t exist.');
@@ -79,7 +79,7 @@ class UpfPhpGenerator extends Upf
 
 	public function setPrintAreaMaterial($material)
 	{
-		if (in_array($material, self::ALLOWED_PRINT_AREA_MATERIALS)) {
+		if (in_array($material, $this->_allowedPrintAreaMaterials)) {
 			$this->_printAreaMaterial = $material;
 		} else {
 			trigger_error("'" . $material . '\' material doesn\'t exist.');
@@ -88,7 +88,7 @@ class UpfPhpGenerator extends Upf
 
 	public function setSoftness($softness)
 	{
-		if (in_array($softness, self::ALLOWED_SOFTNESS)) {
+		if (in_array($softness, $this->_allowedSoftness)) {
 			$this->_softness = $softness;
 		} else {
 			trigger_error("'" . $softness . '\' softness doesn\'t exist.');
