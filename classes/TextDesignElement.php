@@ -2,6 +2,9 @@
 
 class TextDesignElement extends Upf
 {
+	// TODO - there are different font height for different font family
+	const PT_TO_MM = 0.352778;
+
 	private $_text;
 	private $_x;
 	private $_y;
@@ -15,6 +18,9 @@ class TextDesignElement extends Upf
 	private $_font = 'Times New Roman';
 	private $_fontSize = 16;
 	private $_align = 'Near';
+
+	private $_allowedVerticalAligns = ['top', 'bottom', 'center', 'base'];
+	private $_verticalAlign = 'top';
 
 	public function __construct($text, $xMm, $yMm, $widthMm, $heightMm)
 	{
@@ -48,6 +54,18 @@ class TextDesignElement extends Upf
 		return $this;
 	}
 
+	/*
+	 * Set vertical align relative to Y position
+	 */
+	public function setVerticalAlign($align)
+	{
+		if (in_array($align, $this->_allowedVerticalAligns)) {
+			$this->_verticalAlign = $align;
+		} else {
+			trigger_error("'" . $align . '\' align doesn\'t exist.');
+		}
+	}
+
 	public function setFont($fontName)
 	{
 		$this->_font = $fontName;
@@ -77,43 +95,83 @@ class TextDesignElement extends Upf
 	{
 		$texts = explode("\n", $this->_text);
 
+		$x = round($this->_x);
+		$y = round($this->_getY());
+		$width = round($this->_width);
+		$height = round($this->_height);
+
+		$font = $this->_font;
+		$align = $this->_align;
+		$fontSize = $this->_fontSize;
+		$formatting = $this->_getFontFormatting();
+
 		$text = "\t\t\t\t\tObject:TextDesignElement" . PHP_EOL;
 		$text .= "\t\t\t\t\t{" . PHP_EOL;
-		$text .= "\t\t\t\t\t\t" . round($this->_x) . ',' . round($this->_y) . ',';
-		$text .= round($this->_width) . ',' . round($this->_height) . ',';
-		$text .= 'False,' . $this->_font . ',' . $this->_align . ',' . $this->_fontSize . ',0,0,False,0,0,0' . PHP_EOL;
-		$text .= "\t\t\t\t\t\t" . $this->_getFontFormatting() . PHP_EOL;
-		$text .= "\t\t\t\t\t\tFalse" . PHP_EOL;
-		$text .= "\t\t\t\t\t\t" . 'List<string>:' . count($texts) . PHP_EOL;
-		$text .= "\t\t\t\t\t\t" . '{' . PHP_EOL;
 
-		foreach ($texts as $txt) {
-			$text .= "\t\t\t\t\t\t\t" . iconv_strlen($txt) . PHP_EOL;
-			$text .= "\t\t\t\t\t\t\t{" . PHP_EOL;
-			$text .= $txt . PHP_EOL;
-			$text .= "\t\t\t\t\t\t\t}" . PHP_EOL;
-		}
+			$text .= "\t\t\t\t\t\t{$x},{$y},{$width},{$height},";
+			$text .= "False,{$font},{$align},{$fontSize},0,0,False,0,0,0" . PHP_EOL;
+			$text .= "\t\t\t\t\t\t{$formatting}" . PHP_EOL;
+			$text .= "\t\t\t\t\t\tFalse" . PHP_EOL;
 
-		$text .= "\t\t\t\t\t\t" . '}' . PHP_EOL;
+			$text .= "\t\t\t\t\t\t" . 'List<string>:' . count($texts) . PHP_EOL;
+			$text .= "\t\t\t\t\t\t{" . PHP_EOL;
+
+				foreach ($texts as $txt) {
+					$text .= "\t\t\t\t\t\t\t" . iconv_strlen($txt) . PHP_EOL;
+					$text .= "\t\t\t\t\t\t\t{" . PHP_EOL;
+						$text .= $txt . PHP_EOL;
+					$text .= "\t\t\t\t\t\t\t}" . PHP_EOL;
+				}
+
+			$text .= "\t\t\t\t\t\t}" . PHP_EOL;
+
 		$text .= "\t\t\t\t\t}" . PHP_EOL;
 
 		return $text;
 	}
 
+	private function _getY()
+	{
+		switch ($this->_verticalAlign) {
+			case 'top': 
+				$y = $this->_y; 
+			break;
+
+			case 'bottom': 
+				$y = $this->_y - $this->toPoint($this->_fontSize * self::PT_TO_MM); 
+			break;
+
+			// TODO: maybe different font families have different % base position
+			case 'base': 
+				$y = $this->_y - $this->toPoint($this->_fontSize * self::PT_TO_MM) * 0.85; 
+			break;
+
+			case 'center': 
+				$y = $this->_y - $this->toPoint($this->_fontSize * self::PT_TO_MM) * 0.5; 
+			break;
+		}
+
+		return $y;
+	}
+
 	public function _getFontFormatting()
 	{
+		$formattingArr = [];
+
 		if ($this->_bold || $this->_italic || $this->_underline) {
-			$format = $this->_bold ? 'Bold' : '';
+			if ($this->_bold) {
+				$formattingArr[] = 'Bold';
+			}
 
 			if ($this->_italic) {
-				$format .= ((strlen($format) > 0) ? ', ' : '') . 'Italic';
+				$formattingArr[] = 'Italic';
 			}
 
 			if ($this->_underline) {
-				$format .= ((strlen($format) > 0) ? ', ' : '') . 'Underline';
+				$formattingArr[] = 'Underline';
 			}
 
-			return $format;
+			return implode(', ', $formattingArr);
 		} else {
 			return 'Regular';
 		}

@@ -25,12 +25,13 @@ $upf->front->setLayer('Metallic Gold');
 $upf->spine->addPrintArea(0,0, ($heightMm-2*$margin), $spineWidthMm-2*3);
 
 $upf->spine->getPrintArea(0)
-	->addText('Test text with utf chars ĽĺŽŠyj', 0,0, ($heightMm-2*$margin),$spineWidthMm-2*3)
+	->addText('Test text with utf chars ĽĺŽŠyj', 0,($spineWidthMm-2*3)/2, ($heightMm-2*$margin),$spineWidthMm-2*3)
 	->setBold(true)
 	->setItalic(true)
 	->setUnderline(true)
-	->setFont('Verdana')
-	->setFontSize(12);
+	->setFont('Times New Roman')
+	->setFontSize(12)
+	->setVerticalAlign('center');
 
 echo '<pre>' . $upf->toString() . '</pre>';
 
