@@ -19,6 +19,8 @@ class UpfPhpGenerator extends Upf
 	private $_alowedTypes = ['1a', '1b', '2a'];
 	private $_type = '1a';
 
+	private $_isHorizontalSpine = false;
+
 	private $_allowedMaterials = ['cardboard', 'leather', 'plastic'];
 	private $_material = 'cardboard';
 
@@ -68,6 +70,15 @@ class UpfPhpGenerator extends Upf
 		}
 	}
 
+	public function setHorizontalSpine($bool = true)
+	{
+		$this->_isHorizontalSpine = $bool ? true : false;
+
+		$this->front->setHorizontalSpine($bool);
+		$this->spine->setHorizontalSpine($bool);
+		$this->back->setHorizontalSpine($bool);
+	}
+
 	public function setMaterial($material)
 	{
 		if (in_array($material, $this->_allowedMaterials)) {
@@ -99,9 +110,25 @@ class UpfPhpGenerator extends Upf
 	{
 		$this->_margin = $this->toPoint($marginMm);
 
-		$this->front->setPosition($this->_margin + $this->_backWidth + $this->_spineWidth, $this->_margin);
-		$this->spine->setPosition($this->_backWidth, $this->_margin);
-		$this->back->setPosition($this->_margin, $this->_margin);
+		if ($this->_isHorizontalSpine) {
+			$frontX = $this->_margin;
+			$frontY = $this->_margin;
+			$spineX = $this->_margin;
+			$spineY = $this->_frontWidth;
+			$backX = $this->_margin;
+			$backY = $this->_frontWidth + $this->_spineWidth + $this->_margin;
+		} else {
+			$frontX = $this->_margin + $this->_backWidth + $this->_spineWidth;
+			$frontY = $this->_margin;
+			$spineX = $this->_backWidth;
+			$spineY = $this->_margin;
+			$backX = $this->_margin;
+			$backY = $this->_margin;
+		}	
+
+		$this->front->setPosition($frontX, $frontY);
+		$this->spine->setPosition($spineX, $spineY);
+		$this->back->setPosition($backX, $backY);
 	}
 
 	public function setSize($heightMm, $backWidthMm, $spineWidthMm = null, $frontWidthMm = null)
@@ -118,9 +145,15 @@ class UpfPhpGenerator extends Upf
 			$this->_spineWidth = $this->toPoint($spineWidthMm);
 			$this->_frontWidth = $this->toPoint($frontWidthMm);
 
-			$this->back->setSize($this->_height, $this->_backWidth);
-			$this->spine->setSize($this->_height, $this->_spineWidth);
-			$this->front->setSize($this->_height, $this->_frontWidth);
+			if ($this->_isHorizontalSpine) {
+				$this->back->setSize($this->_backWidth, $this->_height);
+				$this->spine->setSize($this->_spineWidth, $this->_height);
+				$this->front->setSize($this->_frontWidth, $this->_height);
+			} else {
+				$this->back->setSize($this->_height, $this->_backWidth);
+				$this->spine->setSize($this->_height, $this->_spineWidth);
+				$this->front->setSize($this->_height, $this->_frontWidth);
+			}
 		}	
 	}
 
@@ -169,7 +202,7 @@ class UpfPhpGenerator extends Upf
 		}
 
 		$upf = "#UPFVERSION:1.1" . PHP_EOL;
-		$upf .= "OR_VERTICALSPINE" . PHP_EOL;
+		$upf .= ($this->_isHorizontalSpine ? "OR_HORIZONTALSPINE" : "OR_VERTICALSPINE") . PHP_EOL;
 		$upf .= "template_" . strtoupper($this->_type) . PHP_EOL;
 		
 		$upf .= "Object:template" . strtoupper($this->_type) . PHP_EOL;

@@ -5,6 +5,8 @@ class AvailablePrintAreaSide extends Upf
 	private $_type;
 	private $_allowedTypes = ['front', 'spine', 'back'];
 
+	private $_isHorizontalSpine = false;
+
 	private $_width;
 	private $_height;
 	private $_x;
@@ -37,6 +39,11 @@ class AvailablePrintAreaSide extends Upf
 		$this->_currentLayer = $this->_layers[$name];
 	}
 
+	public function setHorizontalSpine($bool = true)
+	{
+		$this->_isHorizontalSpine = $bool ? true : false;
+	}
+
 	public function getPrintArea($index)
 	{
 		return $this->_currentLayer->getPrintArea($index);
@@ -62,20 +69,33 @@ class AvailablePrintAreaSide extends Upf
 	public function toString($margin)
 	{
 		$countLayers = count($this->_layers);
-		$width = ($this->_type === 'spine') ? ($this->_width - 2*$this->toPoint(3)) : ($this->_width - 2*$margin);
-		$x = ($this->_type === 'spine') ? ($this->_x - $this->toPoint(3)) : $this->_x;
+
+		$width = round($this->_width - 2*$margin);
+		$height = round($this->_height - 2*$margin);
+		$type = ucfirst($this->_type);
+		$x = round($this->_x);
+		$y = round($this->_y);
+
+		if ($this->_type === 'spine') {
+			if ($this->_isHorizontalSpine) {
+				$height = round($this->_height - 2*$this->toPoint(3));
+				$x = round($this->_x);
+				$y = round($this->_y + $this->toPoint(3));
+			} else {
+				$width = round($this->_width - 2*$this->toPoint(3));
+				$x = round($this->_x - $this->toPoint(3));
+			}
+		}
 
 		$front = "\tObject:AvailablePrintAreaSide" . PHP_EOL;
 		$front .= "\t{" . PHP_EOL;
 
-		// height,width, Front, x,y
-		$front .= "\t\t" . round($this->_height - 2*$margin) . ',' . round($width) . ',' . ucfirst($this->_type) . ',';
-		$front .= round($x) . ',' . round($this->_y) . PHP_EOL;
-		$front .= "\t\t" . $countLayers . PHP_EOL; 
+			$front .= "\t\t{$height},{$width},{$type},{$x},{$y}" . PHP_EOL;
+			$front .= "\t\t{$countLayers}" . PHP_EOL; 
 
-		foreach ($this->_layers as $layer) {
-			$front .= $layer->toString();
-		}
+			foreach ($this->_layers as $layer) {
+				$front .= $layer->toString();
+			}
 
 		$front .= "\t}" . PHP_EOL;
 
