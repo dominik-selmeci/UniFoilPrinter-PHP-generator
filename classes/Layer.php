@@ -3,15 +3,17 @@
 class Layer extends Upf
 {
 	private $_name;
+	private $_availablePrintAreaSide;
 
 	// array = [red, green, blue, alpha];  item(0..255)
 	private $_rgba;
 
 	private $_printAreas = [];
 
-	public function __construct($name, $rgba)
+	public function __construct($name, $rgba, $availablePrintAreaSide)
 	{
 		$this->_name = $name;
+		$this->_availablePrintAreaSide = $availablePrintAreaSide;
 
 		if (!is_array($rgba) || count($rgba) !== 4) {
 			trigger_error("$rgba needs to be specific array format: [red, green, blue, alpha]");
@@ -78,12 +80,23 @@ class Layer extends Upf
 			$firstElementBBox = $printArea[0]->getBBox();
 			$lastElementBBox = $printArea[count($printArea)-1]->getBBox();
 
+			$minX = $this->_getMinAttr($printArea, 'x');
+			$maxX2 = $this->_getMaxAttr($printArea, 'x2');
+
 			$height = $lastElementBBox['y2'] - $firstElementBBox['y'];
 
+			$availablePASBBox = $this->_availablePrintAreaSide->getBBox();
+			$maxWidth = $availablePASBBox['width'] - 2*$availablePASBBox['margin'];
+
+			if ($maxX2 > $maxWidth) {
+				$maxX2 = $maxWidth;
+			}
+
+
 			$newPrintArea = new PrintArea(
-				$this->toMm($firstElementBBox['x']), 
+				$this->toMm($minX), 
 				$this->toMm($firstElementBBox['y']), 
-				$this->toMm($firstElementBBox['width']), 
+				$this->toMm($maxX2 - $minX), 
 				$this->toMm($height)
 			);
 
@@ -93,10 +106,18 @@ class Layer extends Upf
 			foreach ($printArea as $element) {
 				$elBBox = $element->getBBox();
 				$elPrintAreaBBox = $element->getPrintArea()->getBBox();
+				
+				$x = $elBBox['x'] - $minX;
 				$y = $elPrintAreaBBox['y'] - $firstElementPrintAreaBBox['y'];
 				$y += $elBBox['real']['y'] - $elBBox['y'];
 				
-				$element->attr('y', $y);
+				
+
+				$element->attr([
+					'x' => $x,
+					'y' => $y
+				]);
+
 				$newPrintArea->addElement($element);
 			}
 
@@ -104,6 +125,36 @@ class Layer extends Upf
 		}
 
 		$this->_printAreas = $newPrintAreas;
+	}
+
+	private function _getMinAttr($elements, $attr)
+	{
+		$min = null;
+
+		foreach ($elements as $element) {
+			$bbox = $element->getBBox();
+
+			if ($bbox[$attr] < $min || $min === null) {
+				$min = $bbox[$attr];
+			}
+		}
+
+		return $min;
+	}
+
+	private function _getMaxAttr($elements, $attr)
+	{
+		$max = null;
+
+		foreach ($elements as $element) {
+			$bbox = $element->getBBox();
+
+			if ($bbox[$attr] > $max || $max === null) {
+				$max = $bbox[$attr];
+			}
+		}
+
+		return $max;
 	}
 
 	public function toString()

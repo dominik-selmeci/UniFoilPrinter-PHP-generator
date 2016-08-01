@@ -129,6 +129,10 @@ class UpfPhpGenerator extends Upf
 		$this->front->setPosition($frontX, $frontY);
 		$this->spine->setPosition($spineX, $spineY);
 		$this->back->setPosition($backX, $backY);
+
+		$this->front->setMargin($this->_margin);
+		$this->spine->setMargin($this->_margin);
+		$this->back->setMargin($this->_margin);
 	}
 
 	public function setSize($heightMm, $backWidthMm, $spineWidthMm = null, $frontWidthMm = null)

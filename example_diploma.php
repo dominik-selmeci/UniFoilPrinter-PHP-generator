@@ -35,7 +35,7 @@ for ($i=0; $i<10; $i++) {
 	$upf->front->getPrintArea($i)
 		->addText(
 			'ĺyjText top y = ' . (20 * ($i+1) + 20) . 'mm yjĺ,' . $i, //text
-			0, // xMm
+			2*$i, // xMm
 			$fontSize*0.85*0.352778, // yMm
 			($frontWidthMm-2*$margin), //widthMm
 			$fontSize*0.5 //heightMm

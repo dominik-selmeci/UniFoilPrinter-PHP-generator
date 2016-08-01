@@ -11,6 +11,7 @@ class AvailablePrintAreaSide extends Upf
 	private $_height;
 	private $_x;
 	private $_y;
+	private $_margin;
 
 	private $_layers = [];
 	private $_currentLayer;
@@ -32,6 +33,17 @@ class AvailablePrintAreaSide extends Upf
 		} else {
 			trigger_error("'{$type}' is not allowed type for AvailablePrintArea.");
 		}
+	}
+
+	public function getBBox()
+	{
+		return [
+			'x' => $this->_x,
+			'y' => $this->_y,
+			'width' => $this->_width,
+			'height' => $this->_height,
+			'margin' => $this->_margin,
+		];
 	}
 
 	public function setLayer($name)
@@ -75,6 +87,11 @@ class AvailablePrintAreaSide extends Upf
 		$this->_y = $y;
 	}
 
+	public function setMargin($margin)
+	{
+		$this->_margin = $margin;
+	}
+
 	public function toString($margin)
 	{
 		$countLayers = count($this->_layers);
@@ -113,6 +130,6 @@ class AvailablePrintAreaSide extends Upf
 
 	private function _addLayer($name, $rgba)
 	{
-		$this->_layers[$name] = new Layer($name, $rgba);
+		$this->_layers[$name] = new Layer($name, $rgba, $this);
 	}
 }
