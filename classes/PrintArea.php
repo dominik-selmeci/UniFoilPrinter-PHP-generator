@@ -21,9 +21,32 @@ class PrintArea extends Upf
 		$this->_height = $this->toPoint($heightMm);
 	}
 
+	public function addElement($element)
+	{
+		$element->setPrintArea($this);
+		$this->_elements[] = $element;
+	}
+
+	public function getElements()
+	{
+		return $this->_elements;
+	}
+
+	public function getBBox()
+	{
+		return [
+			'x' => $this->_x,
+			'x2' => $this->_x + $this->_width,
+			'y' => $this->_y,
+			'y2' => $this->_y + $this->_height,
+			'width' => $this->_width,
+			'height' => $this->_height,
+		];
+	}
+
 	public function addText($text, $xMm, $yMm, $widthMm, $heightMm)
 	{
-		$textDesignElement = new TextDesignElement($text, $xMm, $yMm, $widthMm, $heightMm);
+		$textDesignElement = new TextDesignElement($text, $xMm, $yMm, $widthMm, $heightMm, $this);
 		$this->_elements[] = $textDesignElement;
 
 		return $textDesignElement;

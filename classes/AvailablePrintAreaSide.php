@@ -39,6 +39,15 @@ class AvailablePrintAreaSide extends Upf
 		$this->_currentLayer = $this->_layers[$name];
 	}
 
+	public function getLayer($name = null)
+	{
+		if ($name === null) {
+			return $this->_currentLayer;
+		} else {
+			return $this->_layers[$name];
+		}
+	}
+
 	public function setHorizontalSpine($bool = true)
 	{
 		$this->_isHorizontalSpine = $bool ? true : false;

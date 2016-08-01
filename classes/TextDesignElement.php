@@ -5,6 +5,8 @@ class TextDesignElement extends Upf
 	// TODO - there are different font height for different font family
 	const PT_TO_MM = 0.352778;
 
+	private $_printArea;
+
 	private $_text;
 	private $_x;
 	private $_y;
@@ -22,15 +24,53 @@ class TextDesignElement extends Upf
 	private $_allowedVerticalAligns = ['top', 'bottom', 'center', 'base'];
 	private $_verticalAlign = 'top';
 
-	public function __construct($text, $xMm, $yMm, $widthMm, $heightMm)
+	public function __construct($text, $xMm, $yMm, $widthMm, $heightMm, $printArea)
 	{
 		$this->_text = $text;
 		$this->_x = $this->toPoint($xMm);
 		$this->_y = $this->toPoint($yMm);
 		$this->_width = $this->toPoint($widthMm);
 		$this->_height = $this->toPoint($heightMm);
+		$this->_printArea = $printArea;
 
 		return $this;
+	}
+
+	public function getBBox()
+	{
+		$printAreaBBox = $this->_printArea->getBBox();
+
+		return [
+			'x' => $this->_x + $printAreaBBox['x'],
+			'x2' => $this->_x + $this->_width + $printAreaBBox['x'],
+			'y' => $this->_getY() + $printAreaBBox['y'],
+			'y2' => $this->_getY() + $this->_height + $printAreaBBox['y'],
+			'width' => $this->_width,
+			'height' => $this->_height,
+			'real' => [
+				'y' => $this->_y + $printAreaBBox['y'],
+				'y2' => $this->_y + $this->_height + $printAreaBBox['y'],
+			]
+		];
+	}
+
+	public function attr($key, $value = null)
+	{
+		if (is_array($key)) {
+			foreach ($key as $i => $val) {
+				$index = '_' . $i;
+
+				if (isset($this->$index)) {
+					$this->$index = $val;
+				}
+			}
+		} else {
+			$key = '_' . $key;
+
+			if (isset($this->$key)) {
+				$this->$key = $value;
+			}
+		}
 	}
 
 	public function setBold($isBold = true)
@@ -64,6 +104,8 @@ class TextDesignElement extends Upf
 		} else {
 			trigger_error("'" . $align . '\' align doesn\'t exist.');
 		}
+
+		return $this;
 	}
 
 	public function setFont($fontName)
@@ -89,6 +131,16 @@ class TextDesignElement extends Upf
 		}
 
 		return $this;
+	}
+
+	public function setPrintArea(PrintArea $printArea)
+	{
+		$this->_printArea = $printArea;
+	}
+
+	public function getPrintArea()
+	{
+		return $this->_printArea;
 	}
 
 	public function toString()

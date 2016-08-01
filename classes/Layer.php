@@ -27,8 +27,83 @@ class Layer extends Upf
 
 	public function getPrintArea($index)
 	{
-		//print_r($this->_printAreas[$index]);
 		return $this->_printAreas[$index];
+	}
+
+	public function optimitePrintAreas()
+	{
+		$allTextElements = [];
+
+		foreach ($this->_printAreas as $printArea) {
+			$elements = $printArea->getElements();
+
+			foreach ($elements as $element) {
+				if (get_class($element) === 'TextDesignElement') {
+					$allTextElements[] = $element;
+				}
+			}
+		}
+
+		/*
+		 * get most of the texts into one or more PrintAreas
+		 */
+		$printAreas = [];
+		$printArea = [];
+
+		for ($i=0; $i<count($allTextElements); $i++) {
+			$printArea = [$allTextElements[$i]];
+			$firstElIndex = $i;
+
+			for ($j=$i+1; $j<count($allTextElements); $j++) {
+				$firstBBox = $allTextElements[$firstElIndex]->getBBox();
+				$secondBBox = $allTextElements[$j]->getBBox();
+
+				if ($this->toMm($secondBBox['y2'] - $firstBBox['y']) <= 55) {
+					$printArea[] = $allTextElements[$j];
+					$i = $j;
+				} else {
+					break;
+				}
+			}
+
+			$printAreas[] = $printArea;	
+		}
+
+		/*
+		 * remove old printareas and create new ones
+		 */
+		$newPrintAreas = [];
+
+		foreach ($printAreas as $printArea) {
+			$firstElementBBox = $printArea[0]->getBBox();
+			$lastElementBBox = $printArea[count($printArea)-1]->getBBox();
+
+			$height = $lastElementBBox['y2'] - $firstElementBBox['y'];
+
+			$newPrintArea = new PrintArea(
+				$this->toMm($firstElementBBox['x']), 
+				$this->toMm($firstElementBBox['y']), 
+				$this->toMm($firstElementBBox['width']), 
+				$this->toMm($height)
+			);
+
+			$firstElementPrintArea = $printArea[0]->getPrintArea();
+			$firstElementPrintAreaBBox = $firstElementPrintArea->getBBox();
+
+			foreach ($printArea as $element) {
+				$elBBox = $element->getBBox();
+				$elPrintAreaBBox = $element->getPrintArea()->getBBox();
+				$y = $elPrintAreaBBox['y'] - $firstElementPrintAreaBBox['y'];
+				$y += $elBBox['real']['y'] - $elBBox['y'];
+				
+				$element->attr('y', $y);
+				$newPrintArea->addElement($element);
+			}
+
+			$newPrintAreas[] = $newPrintArea;
+		}
+
+		$this->_printAreas = $newPrintAreas;
 	}
 
 	public function toString()
