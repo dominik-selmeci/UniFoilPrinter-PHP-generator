@@ -22,23 +22,57 @@ $upf->front->setLayer('Metallic Gold');
 
 
 // set y postion to 100mm from top of cover
-$printAreaY = 100 - $margin;
+//$printAreaY = 100 - $margin;
 
 // add PrintArea ($xMm, $yMm, $widthMm, $heightMm)
-$upf->front->addPrintArea(0,$printAreaY, ($frontWidthMm-2*$margin),40);
-$upf->back->addPrintArea(0,20, ($backWidthMm-2*$margin),55);
+//$upf->back->addPrintArea(0,20, ($backWidthMm-2*$margin),55);
 
-// addText
-$upf->front->getPrintArea(0)
-	->addText('Test text with utf chars ĽĺŽŠyj', 0,0, ($frontWidthMm-2*$margin),20)
-	->setBold(true)
-	->setItalic(true)
-	->setUnderline(true)
-	->setFont('Verdana')
-	->setFontSize(24);
+// addTexts
+for ($i=0; $i<10; $i++) {
+	$fontSize = 10 + $i;
+	$upf->front->addPrintArea(0,20 * ($i+1) + 1, ($frontWidthMm-2*$margin), $fontSize*0.5);
+
+	$upf->front->getPrintArea($i)
+		->addText(
+			'ĺyjText top y = ' . (20 * ($i+1) + 20) . 'mm yjĺ,' . $i, //text
+			0, // xMm
+			$fontSize*0.85*0.352778, // yMm
+			($frontWidthMm-2*$margin), //widthMm
+			$fontSize*0.5 //heightMm
+		)
+		->setBold(true)
+		->setItalic(true)
+		->setUnderline(true)
+		->setFont('Verdana')
+		->setFontSize($fontSize)
+		->setVerticalAlign('center');
+}
 
 
-// add Text, where text base = 130mm
+for ($i=0; $i<10; $i++) {
+	$fontSize = 10 + $i;
+	$upf->back->addPrintArea(0,20 * ($i+1) + 1, ($backWidthMm-2*$margin), $fontSize*0.5);
+
+	$upf->back->getPrintArea($i)
+		->addText(
+			'ĺyjText top y = ' . (20 * ($i+1) + 20) . 'mm yjĺ,' . $i, //text
+			0, // xMm
+			$fontSize*0.85*0.352778, // yMm
+			($backWidthMm-2*$margin), //widthMm
+			$fontSize*0.5 //heightMm
+		)
+		->setBold(true)
+		->setItalic(true)
+		->setUnderline(true)
+		->setFont('Verdana')
+		->setFontSize($fontSize)
+		->setAlign('right')
+		->setVerticalAlign('center');
+}
+
+
+
+/*// add Text, where text base = 130mm
 $fontSize = 30;
 $ptToMm = 0.352778;
 $fontSizeMm = $fontSize * $ptToMm;
@@ -51,16 +85,10 @@ $textY -= $fontSizeMm * 0.85; //move top of the text to -85% of the text height
 $upf->back->getPrintArea(1)
 	->addText('ĺText base y = 130mmĺ', 0, $textY, ($frontWidthMm-2*$margin), $fontSize*0.5)
 	->setFontSize($fontSize)
-	->setFont('Verdana');
+	->setFont('Verdana');*/
 
-// add Text, where text base = 150mm
-$fontSize = 10;
-$fontSizeMm = $fontSize * $ptToMm;
-$upf->back->getPrintArea(1)
-	->addText('ĺText base y = 150mmĺ', 0, 40 - $fontSizeMm * 0.85, ($frontWidthMm-2*$margin), $fontSize*0.5)
-	->setFontSize($fontSize)
-	->setFont('Verdana');
 
+$upf->front->getLayer()->optimitePrintAreas();
 
 echo '<pre>' . $upf->toString() . '</pre>';
 
