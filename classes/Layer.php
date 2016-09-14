@@ -32,7 +32,7 @@ class Layer extends Upf
 		return $this->_printAreas[$index];
 	}
 
-	public function optimitePrintAreas()
+	public function optimizePrintAreas()
 	{
 		$allTextElements = [];
 
@@ -45,6 +45,26 @@ class Layer extends Upf
 				}
 			}
 		}
+
+		/*
+		 * sort text elements by "y" position
+		 */
+		$sortByY = function($a, $b) {
+			$aBBox = $a->getBBox();
+			$bBBox = $b->getBBox();
+
+			if ($aBBox['y'] === $bBBox['y']) {
+				return 0;
+			}
+
+			if ($aBBox['y'] > $bBBox['y']) {
+				return 1;
+			} else {
+				return -1;
+			}
+		};
+
+		usort($allTextElements, $sortByY);
 
 		/*
 		 * get most of the texts into one or more PrintAreas

@@ -88,7 +88,7 @@ $upf->back->getPrintArea(1)
 	->setFont('Verdana');*/
 
 
-$upf->front->getLayer()->optimitePrintAreas();
+$upf->front->getLayer()->optimizePrintAreas();
 
 echo '<pre>' . $upf->toString() . '</pre>';
 
