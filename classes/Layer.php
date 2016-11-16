@@ -36,6 +36,9 @@ class Layer extends Upf
 	{
 		$allTextElements = [];
 
+		/*
+		 * get all text elements
+		 */
 		foreach ($this->_printAreas as $printArea) {
 			$elements = $printArea->getElements();
 
@@ -100,23 +103,14 @@ class Layer extends Upf
 			$firstElementBBox = $printArea[0]->getBBox();
 			$lastElementBBox = $printArea[count($printArea)-1]->getBBox();
 
-			$minX = $this->_getMinAttr($printArea, 'x');
-			$maxX2 = $this->_getMaxAttr($printArea, 'x2');
-
 			$height = $lastElementBBox['y2'] - $firstElementBBox['y'];
-
 			$availablePASBBox = $this->_availablePrintAreaSide->getBBox();
-			$maxWidth = $availablePASBBox['width'] - 2*$availablePASBBox['margin'];
-
-			if ($maxX2 > $maxWidth) {
-				$maxX2 = $maxWidth;
-			}
-
+			$paWidth = $availablePASBBox['width'] - 2* $availablePASBBox['margin'];
 
 			$newPrintArea = new PrintArea(
-				$this->toMm($minX), 
+				$this->toMm(0), 
 				$this->toMm($firstElementBBox['y']), 
-				$this->toMm($maxX2 - $minX), 
+				$this->toMm($paWidth), 
 				$this->toMm($height)
 			);
 
@@ -127,14 +121,10 @@ class Layer extends Upf
 				$elBBox = $element->getBBox();
 				$elPrintAreaBBox = $element->getPrintArea()->getBBox();
 				
-				$x = $elBBox['x'] - $minX;
 				$y = $elPrintAreaBBox['y'] - $firstElementPrintAreaBBox['y'];
 				$y += $elBBox['real']['y'] - $elBBox['y'];
-				
-				
 
 				$element->attr([
-					'x' => $x,
 					'y' => $y
 				]);
 
