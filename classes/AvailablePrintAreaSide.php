@@ -117,10 +117,17 @@ class AvailablePrintAreaSide extends Upf
 		$front .= "\t{" . PHP_EOL;
 
 			$front .= "\t\t{$height},{$width},{$type},{$x},{$y}" . PHP_EOL;
-			$front .= "\t\t{$countLayers}" . PHP_EOL; 
+			
+			// there are no layers in spine (template OR_VERTICALSPINE)
+			if ($this->_type === 'spine' && !$this->_isHorizontalSpine) {
+				$front .= "\t\t0" . PHP_EOL;
+			} else {
+				$front .= "\t\t{$countLayers}" . PHP_EOL; 
 
-			foreach ($this->_layers as $layer) {
-				$front .= $layer->toString();
+				foreach ($this->_layers as $layer) {
+
+					$front .= $layer->toString();
+				}
 			}
 
 		$front .= "\t}" . PHP_EOL;
