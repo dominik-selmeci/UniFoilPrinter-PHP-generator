@@ -103,7 +103,9 @@ class Layer extends Upf
 			$firstElementBBox = $printArea[0]->getBBox();
 			$lastElementBBox = $printArea[count($printArea)-1]->getBBox();
 
-			$height = $lastElementBBox['y2'] - $firstElementBBox['y'];
+			// height must be exactly as in default template cca 56 mm
+			// if < 56mm, then printer prints on bad side of the document
+			$height = 672;
 			$availablePASBBox = $this->_availablePrintAreaSide->getBBox();
 			$paWidth = $availablePASBBox['width'] - 2* $availablePASBBox['margin'];
 
