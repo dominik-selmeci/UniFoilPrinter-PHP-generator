@@ -105,15 +105,24 @@ class Layer extends Upf
 
 			// height must be exactly as in default template cca 56 mm
 			// if < 56mm, then printer prints on bad side of the document
-			$height = 672;
+			$printareaHeight = 672;
 			$availablePASBBox = $this->_availablePrintAreaSide->getBBox();
 			$paWidth = $availablePASBBox['width'] - 2* $availablePASBBox['margin'];
 
+			$isInAvailableHeight = ($firstElementBBox['y'] + $printareaHeight) <= ($availablePASBBox['height'] - $availablePASBBox['margin']);
+			if ($isInAvailableHeight) {
+				$printAreaY = $firstElementBBox['y'];
+				$difference = 0;
+			} else {
+				$printAreaY = $availablePASBBox['height'] - $printareaHeight - 2*$availablePASBBox['margin'];
+				$difference = $firstElementBBox['y'] - $printAreaY;
+			}		
+
 			$newPrintArea = new PrintArea(
 				$this->toMm(0), 
-				$this->toMm($firstElementBBox['y']), 
+				$this->toMm($printAreaY), 
 				$this->toMm($paWidth), 
-				$this->toMm($height)
+				$this->toMm($printareaHeight)
 			);
 
 			$firstElementPrintArea = $printArea[0]->getPrintArea();
@@ -125,6 +134,7 @@ class Layer extends Upf
 				
 				$y = $elPrintAreaBBox['y'] - $firstElementPrintAreaBBox['y'];
 				$y += $elBBox['real']['y'] - $elBBox['y'];
+				$y += $difference;
 
 				$element->attr([
 					'y' => $y
