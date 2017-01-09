@@ -152,7 +152,7 @@ class TextDesignElement extends Upf
 		$width = round($this->_width);
 		$height = round($this->_height);
 
-		$font = $this->_font;
+		$font = trim($this->_font, "\x22\x27"); // sometimes there is " or '
 		$align = $this->_align;
 		$fontSize = $this->_fontSize;
 		$formatting = $this->_getFontFormatting();
