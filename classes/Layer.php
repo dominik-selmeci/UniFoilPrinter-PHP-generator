@@ -75,6 +75,9 @@ class Layer extends Upf
 		$printAreas = [];
 		$printArea = [];
 
+		// we add some top space for text in printarea (diacritics)
+		$topOffsetMm = 2;
+
 		for ($i=0; $i<count($allTextElements); $i++) {
 			$printArea = [$allTextElements[$i]];
 			$firstElIndex = $i;
@@ -83,7 +86,8 @@ class Layer extends Upf
 				$firstBBox = $allTextElements[$firstElIndex]->getBBox();
 				$secondBBox = $allTextElements[$j]->getBBox();
 
-				if ($this->toMm($secondBBox['y2'] - $firstBBox['y']) <= 55) {
+				
+				if ($this->toMm($secondBBox['y2'] - $firstBBox['y']) <= (56-$topOffsetMm)) {
 					$printArea[] = $allTextElements[$j];
 					$i = $j;
 				} else {
@@ -109,9 +113,9 @@ class Layer extends Upf
 			$availablePASBBox = $this->_availablePrintAreaSide->getBBox();
 			$paWidth = $availablePASBBox['width'] - 2* $availablePASBBox['margin'];
 
-			$isInAvailableHeight = ($firstElementBBox['y'] + $printareaHeight) <= ($availablePASBBox['height'] - $availablePASBBox['margin']);
+			$isInAvailableHeight = ($firstElementBBox['y'] + $printareaHeight - $this->toPoint($topOffsetMm)) <= ($availablePASBBox['height'] - $availablePASBBox['margin']);
 			if ($isInAvailableHeight) {
-				$printAreaY = $firstElementBBox['y'];
+				$printAreaY = $firstElementBBox['y'] - $this->toPoint($topOffsetMm);
 				$difference = 0;
 			} else {
 				$printAreaY = $availablePASBBox['height'] - $printareaHeight - 2*$availablePASBBox['margin'];
@@ -135,6 +139,10 @@ class Layer extends Upf
 				$y = $elPrintAreaBBox['y'] - $firstElementPrintAreaBBox['y'];
 				$y += $elBBox['real']['y'] - $elBBox['y'];
 				$y += $difference;
+
+				if ($isInAvailableHeight) {
+					$y += $this->toPoint($topOffsetMm);
+				}
 
 				$element->attr([
 					'y' => $y
